@@ -28,7 +28,7 @@ function cmp_version_gt()
 }
 
 
-if ! which wget &> /dev/null || ! which zcat &> /dev/null; then
+if ! which wget &> /dev/null || ! which zcat &> /dev/null || ! which checkupdates &> /dev/null; then
   exit $EXIT_DEPENDENCY_FAILURE
 fi
 
