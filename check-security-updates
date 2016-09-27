@@ -5,7 +5,7 @@
 # (packagename old_version -> new_version),
 # but only those that are security relavant.
 #
-# Usage: ./checkupdates 
+# Usage: ./check-security-updates 
 #
 # Dependencies: wget, checkupdates
 #
