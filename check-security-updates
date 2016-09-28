@@ -109,7 +109,7 @@ done
 #
 checkupdates | while read -r line; do
   package=`echo $line | cut -d ' ' -f 1`
-  ver_cur=x`echo $line | cut -d ' ' -f 3`
+  ver_cur=x`echo $line | cut -d ' ' -f 2`
   ver_upd=x`echo $line | cut -d ' ' -f 4`
   ver_sec=x${map[$package]}
   
