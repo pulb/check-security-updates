@@ -68,41 +68,39 @@ fi
 # of current and last month
 #
 
-if ! wget $base_url/$filename1 &> /dev/null; then
-  exit $EXIT_DOWNLOAD_FAILURE
-fi
-
-if ! wget $base_url/$filename2 &> /dev/null; then
+if ( ! wget $base_url/$filename1 &> /dev/null ) && ( ! wget $base_url/$filename2 &> /dev/null ); then
   exit $EXIT_DOWNLOAD_FAILURE
 fi
 
 #
-# Create 'package>=version' lists
-# ("package_a>=version package_b>=version ...")
-#
-list1=`zcat $filename1 | grep -os "pacman -Syu .*>=.*" | tr -d '"' | cut -d ' ' -f 3`
-list2=`zcat $filename2 | grep -os "pacman -Syu .*>=.*" | tr -d '"' | cut -d ' ' -f 3`
-
-#
-# Create package->version map
+# Create 'package>=version' lists ("package_a>=version package_b>=version ...")
+# and build a package->version map of them.
 #
 declare -A map
 
-for p in $list1; do
-  tmp=`echo $p | tr -d '>' | tr '=' ' '`
-  package=`echo $tmp | cut -d ' ' -f 1`
-  version=`echo $tmp | cut -d ' ' -f 2`
-  map[$package]=$version
-done
+if [ -f $filename1 ]; then
+  list1=`zcat $filename1 | grep -os "pacman -Syu .*>=.*" | tr -d '"' | cut -d ' ' -f 3`
+  
+  for p in $list1; do
+    tmp=`echo $p | tr -d '>' | tr '=' ' '`
+    package=`echo $tmp | cut -d ' ' -f 1`
+    version=`echo $tmp | cut -d ' ' -f 2`
+    map[$package]=$version
+  done
+fi
 
-for p in $list2; do
-  tmp=`echo $p | tr -d '>' | tr '=' ' '`
-  package=`echo $tmp | cut -d ' ' -f 1`
-  version=`echo $tmp | cut -d ' ' -f 2`
-  # Note: this replaces a lower version 
-  # of the same package in the map.
-  map[$package]=$version
-done
+if [ -f $filename2 ]; then
+  list2=`zcat $filename2 | grep -os "pacman -Syu .*>=.*" | tr -d '"' | cut -d ' ' -f 3`
+  
+  for p in $list2; do
+    tmp=`echo $p | tr -d '>' | tr '=' ' '`
+    package=`echo $tmp | cut -d ' ' -f 1`
+    version=`echo $tmp | cut -d ' ' -f 2`
+    # Note: this replaces a lower version 
+    # of the same package in the map.
+    map[$package]=$version
+  done
+fi
 
 # Run checkupdates and only list packages
 # that are in the map of security relevant packages
