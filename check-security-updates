@@ -46,8 +46,8 @@ else
   last_year=$year
 fi
 
-filename1=$year-$month.txt.gz
-filename2=$last_year-$last_month.txt.gz
+filename1=$last_year-$last_month.txt.gz
+filename2=$year-$month.txt.gz
 
 if [ ! -d $download_dir ]; then
   mkdir -p $download_dir &> /dev/null
@@ -67,8 +67,12 @@ fi
 # Download security advisory archives
 # of current and last month
 #
+wget $base_url/$filename1 &> /dev/null
+r1=$?
+wget $base_url/$filename2 &> /dev/null
+r2=$?
 
-if ( ! wget $base_url/$filename1 &> /dev/null ) && ( ! wget $base_url/$filename2 &> /dev/null ); then
+if [ $r1 -ne 0 ] && [ $r2 -ne 0 ]; then
   exit $EXIT_DOWNLOAD_FAILURE
 fi
 
